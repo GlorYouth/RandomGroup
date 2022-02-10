@@ -1,251 +1,280 @@
-﻿#include <iostream>
+#include <iostream>
 #include<ctime>
 #include <cstdlib>
 #include<array>
 #include<vector>
 using namespace std;
-const array<string, 55> members{ "陈俊东","陈婉林","陈勇佳","丁晨洋","冯飞雯","冯泳钰","关楚睿","关淇允","何隽烨","洪勇坤","黄嘉慧","黄书伟","黄杏婷",
-        "黄咏诗","江晓君","劳伟臻","李佳霖","李若霖","李早","梁艺臻","梁宇恒","廖淞竣","林均泽","刘津蕊","刘炫辰","刘阳","陆才耀","陆嘉铭",
-        "伦宇杭","罗月霞","欧阳珏尧","潘亚颢","邱国勐","沈慧婕","苏树琪","汤蝶韵","唐鸿杰","汪思莉","韦绍煌","吴东燃","吴烨进","伍绮静",
-        "谢浩翔","徐家栋","徐一钦","姚蕾","叶心怡","易雯清","张睿钧","张伟坤","钟培燃","周政轩","朱洁兰","麦艺洋","吴心妍" };
-struct ClassStruct { vector<int> group; } AllGroup[8] = {};
-struct GroupStruct { int number; vector<int> sex; };
-int JudgeCycle(void),DefineJudge(int), MainCycle(int), MainExtract(array<int, 55>),
-    GetSex(int), Requirement(void),DefineNumber(int), DefineMember(GroupStruct, int); //定义判断循环，定义主要的循环,定义获得随机数的函数
-const int ClassNumber = 55, GroupTotal = 8;
-int HiddenSetting = 0;
-void output(int,int), GroupOutput(void), GroupCycle(void), HiddenMode(void);                //定义输出姓名的函数
-array<int, ClassNumber> member = {};
+const int ClassNumber = 55, GroupTotal = 8, KeepRunning = 1;
+int HiddenSetting = 1;
+struct ParameterStruct { int AutoSetting; int Times; int Rise; int TotalTimes; };
+int JudgeCycle(void), MainExtract(array<int, ClassNumber>*),
+    GetSex(int), DefineMember(vector<int>, int); //定义判断循环，定义主要的循环,定义获得随机数的函数
+bool MainCycle(int), InputTimes(ParameterStruct*, array<int, ClassNumber>*), DefineTimes(ParameterStruct*, array<int, ClassNumber>*),
+     DefineJudge(int), DefineNumber(int, array<int, ClassNumber>*), Requirement(vector<int>*);
+void Output(int, int, array<int, ClassNumber>*), GroupOutput(vector<int>*), GroupCycle(vector<int>*),
+     HiddenMode(void), function2(void), function1(int), MemberOutput(int, int);
+vector<int> Demo;
 int main()
 {
-    while (MainCycle(JudgeCycle()) == 0);  //使用主循环和默认设置
-    return 0;
-}
+    while (MainCycle(JudgeCycle()));
+}  //使用主循环和默认设置
 
 int JudgeCycle()
 {
-    int AutoSetting = 0, KeepRunning = 1;
+    int AutoSetting = 1;
     do 
     {
         cout << "选择程序运行用途：" << endl << "1、重复抽签" << endl << "2、不重复抽签" << endl << "3、排座位" << endl << endl;
-        cin >> AutoSetting;
+        cin >>  AutoSetting;
         cout << endl;
-    } while (DefineJudge(AutoSetting) == 0);
+    } while (DefineJudge(AutoSetting));
     return AutoSetting;
 }
 
-int DefineJudge(int AutoSetting)
+bool DefineJudge(int AutoSetting)
 {
-    if (AutoSetting == 1 || AutoSetting == 2 || AutoSetting == 3 || AutoSetting == 114514)
-        return 1;
+    if (AutoSetting == 1 || AutoSetting == 2 || AutoSetting == 3 || AutoSetting == 114514 )
+        return false;
     cout << "别TM输入些什么乱七八糟的东西" << endl << endl;
-    return 0;
+    return true;
 }
 
-int MainCycle(int AutoSetting) //定义默认设置、循环获取抽取人数的次数
+bool MainCycle(int AutoSetting) //定义默认设置、循环获取抽取人数的次数
 {
-    int times = 0, RandomNumber, times2 = 0, rise1 = 0, rise2 = 0, JudgeContinue = 0;
-    member.fill(-1);
-    while (AutoSetting == 1) //选择循环
+    srand(time(nullptr));
+    switch (AutoSetting)
     {
-        srand((int)time(0));
-        member.fill(-1); //初始化member数组，防止出现无限循环 
-        rise1 = 0;
-        cout << "请输入需要抽出多少个人......(数字介于0和56中间)（如果需要重新选择功能，请输入0）" << endl;
-        cin >> times;    //输入循环获取抽取人数的次数
-        cout << endl;
-        if (times == 0)
-            break;
-        if (times >= 1 && times <= ClassNumber)  //循环抽取
-        {
-            for (times = times; times >= 1; times--) //由于输入的次数为1-55，对应循环次数也应当为从一到抽取次数
-            {
-                member[rise1] = MainExtract(member);  //由于数组的编号从0开始，也就应该令获得的第n个随机数与数组中第n个数相等，因此递增的数（即表示第n次抽取）从0开始
-                RandomNumber = member[rise1];   //令获得的第n个随机数与数组中第n个数相等
-                rise1++;                        //由于递增的数从0开始，必须使它从1开始才能被当为序号，所以放在判断的前面
-                output(RandomNumber,rise1);  //输出人名
-            }
-        }
-        else
-        {
-            cout << "别TM输入些什么乱七八糟的东西" << endl << endl;
-            continue;  //如果输入错误，重新循环程序
-        }
-        cout << endl;
-        continue;  //自动重复运行程序以达到方便的目的
+    case 1:function1(AutoSetting);
+        break;
+    case 2:function1(AutoSetting);
+        break;
+    case 3:function2();
+        break;
+    default:HiddenMode();
+        break;
     }
-    while (AutoSetting == 2) //选择循环
-    {
-        srand((int)time(0));
-        cout << "请输入需要抽出多少个人......(数字介于0和56中间)（如果需要重新选择功能，请输入0）" << endl;
-        cin >> times;    //输入循环获取抽取人数的次数
-        cout << endl;
-        if (times == 0)
-            break;
-        if (times >= 1 && times <= ClassNumber)  //循环抽取
-        {
-            times2 = times + rise2;
-            if (times2 >= ClassNumber + 1)  //判断抽取次数于之前抽取总数之和范围小于等于56
-            {
-                cout << "总抽取人数大于或等于" << ClassNumber + 1 << "人，是否重置抽取池？重置请按1，退出请输入任意字符。" << endl;
-                cin >> JudgeContinue;
-                cout << endl;
-                if (JudgeContinue == 1)
-                {
-                    times2 = 0, rise2 = 0;
-                    member.fill(-1); //初始化member数组，防止出现无限循环 
-                    rise1 = 0;
-                    continue;
-                }
-                else
-                    break;
-            }
-            for (times = times; times >= 1; times--) //由于输入的次数为1-55，对应循环次数也应当为从一到抽取次数
-            {
-                member[rise1] = MainExtract(member);  //由于数组的编号从0开始，也就应该令获得的第n个随机数与数组中第n个数相等，因此递增的数（即表示第n次抽取）从0开始
-                RandomNumber = member[rise1];   //令获得的随机数与数组中第n个数相等
-                rise1++;                       //由于递增的数从0开始，必须使它从1开始才能被当为序号，所以放在判断的前面
-                output(RandomNumber,rise1);  //输出人名
-            }
-        }
-        else
-        {
-            cout << "别TM输入些什么乱七八糟的东西" << endl << endl;
-            continue;  //如果输入错误，重新循环程序
-        }
-        cout << endl;
-        rise2 = rise1 + 1; //由于increasing_number的范围为0-54，必须要+1才能令之后的判断成立
-        continue;  //自动重复运行程序以达到方便的目的
-    }
-    if (AutoSetting == 3) //选择循环
-    {
-        do
-            GroupCycle();
-        while (Requirement() == 1);
-        GroupOutput();
-        ClassStruct AllGroup[8] = {};
-    }
-    if (AutoSetting == 114514)
-        HiddenMode();
-    return times;  //修改功能
+    return true;  //修改功能
 }
 
-void GroupCycle(void)
+void function1(int AutoSetting)
 {
-    srand((int)time(0));
-    GroupStruct group[3] { {7,{-1,-1,-1,-1,-2,-2,-2}},{7,{-1,-1,-1,-2,-2,-2,-2}},{6,{-1,-1,-1,-2,-2,-2}} };
-    vector<int> WholeGroup;
-    member.fill(-1); //初始化member数组，防止出现无限循环 
-    int group1 = 0, group2 = 0, MemberSex = 0, GroupStruct, rise1 = 0, times, times2;
-    const int KeepRunning = 1;
+    array<int, ClassNumber>* Member = new array<int, ClassNumber>{};
+    ParameterStruct* Parameter = new ParameterStruct{ AutoSetting ,0,0,0 };
+    while (InputTimes(Parameter, Member))
+    {
+        for (int times = Parameter->Times; times >= 1; times--) //由于输入的次数为1-55，对应循环次数也应当为从一到抽取次数
+        {
+            Member->at(Parameter->Rise) = MainExtract(Member);
+            //由于数组的编号从0开始，也就应该令获得的第n个随机数与数组中第n个数相等，因此递增的数（即表示第n次抽取）从0开始
+            Parameter->Rise++;                        //令递增的数从0开始
+        }
+        Parameter->TotalTimes = Parameter->TotalTimes + Parameter->Times;
+        Output(Parameter->Times, Parameter->TotalTimes, Member);  //输出人名
+        cout << endl;
+    }
+    delete Parameter,Member;
+    Parameter = nullptr, Member = nullptr;
+}
+
+bool InputTimes(ParameterStruct* Parameter , array<int, ClassNumber>* Member) //这里使用指针的原因是要修改Parameter的值
+{
+    do
+    {
+        cout << "请输入需要抽出多少个人......(数字介于0和56中间)（如果需要重新选择功能，请输入0）" << endl;
+        cin >> Parameter->Times;    //输入循环获取抽取人数的次数
+        cout << endl;
+    } while (DefineTimes(Parameter, Member));
+    if (Parameter->AutoSetting == 1) //Parameter本身是一个指针
+    {
+        Parameter->TotalTimes = 0;
+        Parameter->Rise = 0;
+        Member->fill(0);
+    }
+    if (Parameter->Times == 0)
+        return false;
+    return true;
+}
+
+bool DefineTimes(ParameterStruct* Parameter, array<int, ClassNumber>* Member)
+{
+    if (Parameter->Times >= 0 && Parameter->Times <= ClassNumber)
+    {
+        if (Parameter->AutoSetting == 2 && Parameter->TotalTimes + Parameter->Times > 55)
+        {
+            cout << "总抽取人数大于" << ClassNumber << "人，是否重置抽取池？重置请按1，重新选择功能请输入任意字符。" << endl;
+            int JudgeContinue;
+            cin >> JudgeContinue;
+            cout << endl;
+            if (JudgeContinue == 1)
+            {
+                Parameter->TotalTimes = 0;
+                Parameter->Rise = 0;
+                Member->fill(0);
+                return true;
+            }
+            else
+            {
+                Member->fill(0);
+                Parameter->Times = 0;
+                return false;
+            }
+        }
+        return false;
+    }
+    return true;
+}
+
+void Output(int times, int TotalTimes, array<int, ClassNumber>* Member)
+{
+    vector<int>* OutputVector = new vector<int>(Member->cbegin() + TotalTimes - times, Member->cbegin() + TotalTimes);
+    int rise1 = TotalTimes - times + 1;
+    for (int InsideMember : *OutputVector)
+    {
+        if (rise1 >= 1 && rise1 <= 9) //判断数字大小从而达到美观的目的
+            cout << rise1 << ".  "; //多加个空格
+        else
+            cout << rise1 << ". ";
+        MemberOutput(InsideMember, 1);
+        rise1++;
+    }
+    delete OutputVector;
+    OutputVector = nullptr;
+}
+
+void function2()
+{
+    vector<int>* WholeClass = new vector<int>[GroupTotal];
+    //注意WholeClass本身是vector数组的地址，这意味着仅仅这个数组是指针并且这个数组的类型是vector<int>
+    do
+        GroupCycle(WholeClass);
+    while (Requirement(WholeClass));
+    GroupOutput(WholeClass);
+    Demo = *WholeClass;
+    delete [] WholeClass;
+    WholeClass = nullptr;
+}
+
+void GroupCycle(vector<int>* WholeClass)
+{
+    vector<int>* Group = new vector<int>[3] { {-1, -1, -1, -1, -2, -2, -2}, {-1,-1,-1,-2,-2,-2,-2}, {-1,-1,-1,-2,-2,-2} };
+    array<int, ClassNumber>* Member = new array<int, ClassNumber>{};
+    int group1 = 0, group2 = 0, MemberSex = 0, GroupStruct, rise = 0;
     do
         group1 = rand() % 8, group2 = rand() % 8;  //获得的特殊组的随机数范围为0-7
     while (group1 == group2);  //当两个组的组号相等时，重新获取
-    for (times = 0; times < GroupTotal ; times++)
+    for (int times = 0; times < GroupTotal ; times++)
     {
-        if (times == group2)
+        if (times == group2)  //switch无法使用，因为两者都是变量
             GroupStruct = 2;
         else if (times == group1)
             GroupStruct = 1;
         else
             GroupStruct = 0;
-        WholeGroup.clear();
-        WholeGroup.resize(group[GroupStruct].number);
-        for (times2 = 0; times2 < group[GroupStruct].number; times2++)
+        WholeClass[times].clear();
+        WholeClass[times].resize(Group[GroupStruct].size());
+        for (int &InsideMember: WholeClass[times]) //"&"的作用是令WholeClass[times]的值可以修改
         {
             do
             {
-                member[rise1] = MainExtract(member);//由于数组的编号从0开始，也就应该令获得的第n个随机数与数组中第n个数相等，因此递增的数（即表示第n次抽取）从0开始
-                MemberSex = GetSex(member[rise1]); //获得成员对应的性别(MemberSex的范围为-2到-1)
-            } while (DefineMember(group[GroupStruct], MemberSex) == -1);
-            group[GroupStruct].sex[DefineMember(group[GroupStruct], MemberSex)] = member[rise1];
-            WholeGroup[times2] = member[rise1];
-            rise1++;
+                Member->at(rise) = MainExtract(Member);//由于数组的编号从0开始，也就应该令获得的第n个随机数与数组中第n个数相等，因此递增的数（即表示第n次抽取）从0开始
+                MemberSex = GetSex(Member->at(rise) - 1); //获得成员对应的性别(MemberSex的范围为-2到-1)
+            } while (DefineMember(Group[GroupStruct], MemberSex) == -1);
+            Group[GroupStruct][DefineMember(Group[GroupStruct], MemberSex)] = Member->at(rise);
+            InsideMember = Member->at(rise);
+            rise++;
         }
-        AllGroup[times].group = WholeGroup;
-        group[0].sex = { -1,-1,-1,-1,-2,-2,-2 };
+        Group[0] = { -1,-1,-1,-1,-2,-2,-2 }; //重新设置默认组的配置
     }
+    delete [] Group;
+    delete Member;
+    Member = nullptr,Group = nullptr;
 }
 
-int DefineMember(GroupStruct TheGroup,int MemberSex)
+int DefineMember(vector<int> TheGroup,int MemberSex)
 {
-    for (int rise1 = 0; rise1 < TheGroup.number; rise1++)
+    for (int rise1 = 0; rise1 < TheGroup.size(); rise1++)
     {
-        if (TheGroup.sex[rise1] == MemberSex)
+        if (TheGroup[rise1] == MemberSex)
             return rise1;
-        if (rise1 == TheGroup.number - 1 && TheGroup.sex[rise1] != MemberSex)
+        if (rise1 == TheGroup.size() - 1 && TheGroup[rise1] != MemberSex)
             return -1;
     }
-    return -2;
+    return -2;       //没啥用，仅仅是为了让编译器不警告
 }
 
-int Requirement(void)
+bool Requirement(vector<int>* WholeClass)
 {
     if (HiddenSetting == 0) //如果隐藏设置被关闭，则不经过筛选
-        return 0;
-    for (int rise1 = 0,judge1, judge2; rise1 < GroupTotal; rise1++)
+        return false;
+    if (Demo == *WholeClass)
+        return true;
+    for (int rise1 = 0; rise1 < GroupTotal; rise1++) 
+        //遍历这个数组中所有的vector (因为*WholeClass == WholeClass[0]，所以不能直接for(vector <int> Group : WholeClass) )
     {
-        judge1 = 0, judge2 = 0;
-        for (int rise2 = 0; rise2 < AllGroup[rise2].group.size(); rise2++)
+        int judge1 = 0, judge2 = 0;
+        for (int InsideMember: WholeClass[rise1]) //遍历所有vector里的数字
         {
-            if (AllGroup[rise1].group[rise2] == 36)
+            if (InsideMember == 36)
                 judge1 = 1;
-            if (AllGroup[rise1].group[rise2] == 28)
+            if (InsideMember == 28)
                 judge2 = 1;
         }
         if (judge1 == 1 && judge2 == 1) //两个人在同一个组内
-            return 1;
+            return true;
     }
-    return 0; //筛选满足条件的结果
+    return false; //筛选满足条件的结果
 }
 
-int MainExtract(array<int, ClassNumber> member) //定义获得随机数的函数
+int MainExtract(array<int, ClassNumber>* Member) //定义获得随机数的函数
 {
-    int KeepRunning = 1, RandomNumber = -1;
+    int RandomNumber = -1;
     do
-        RandomNumber = rand() % ClassNumber; //随机数的范围0-54
-    while (DefineNumber(RandomNumber) == 1);
+        RandomNumber = rand() % ClassNumber + 1; //随机数的范围1-55
+    while (DefineNumber(RandomNumber,Member));
     return RandomNumber; //返回有随机数的值
 }
 
-int DefineNumber(int RandomNumber)
+bool DefineNumber(int RandomNumber, array<int, ClassNumber>* Member)
 {
-    for (int rise1 = 0; rise1 < ClassNumber; rise1++) //遍历数组中所有的数字，从而确保一定没有重复值
-        if (member[rise1] == RandomNumber)  //判断产生随机数的值是否与之前产生的是否重复
-            return 1;
-    return 0;
+    for (int rise = 0;rise < Member->size();rise++) //遍历数组中所有的数字，从而确保一定没有重复值
+        if (Member->at(rise) == RandomNumber)  //判断产生随机数的值是否与之前产生的是否重复
+            return true;
+    return false;
 }
 
-void output(int RandomNumber,int rise)
-{
-    if (rise >= 1 && rise <= 9) //判断数字大小从而达到美观的目的
-        cout << rise << ".  "; //多加个空格
-    else
-        cout << rise << ". ";
-    cout << members[RandomNumber] << endl;
-}
-
-void GroupOutput(void)
+void GroupOutput(vector<int>* WholeClass)
 {
     for (int rise1 = 0; rise1 < GroupTotal; rise1++)
     {
+        int rise2 = 0;
         cout << endl << "第" << rise1 + 1 << "组" << endl << endl;
-        for (int rise2 = 0; rise2 < AllGroup[rise1].group.size(); rise2++)
+        for (int InsideMember: WholeClass[rise1])
         {
-            if (rise2 % 2 == 0)
-                cout << members[AllGroup[rise1].group[rise2]] << " ";
-            else
-                cout << members[AllGroup[rise1].group[rise2]] << endl;
+            MemberOutput(InsideMember, rise2);
+            rise2++;
         }
         cout << endl;
     }
     cout << endl << endl;
 }
 
-int GetSex(int number)
+int GetSex(int Number)
 {
-    array<int, 55> sex{ -1,-2,-1,-1,-2,-2,-1,-2,-1,-1,-2,-1,-2,-2,-2,-1,-2,-1,-2,-1,-1,-1,-1,-2,-1,-2,-1,-1,-1,-2,-2,-1,-1,-2,-2,-2,-1,-2,-1,-1,-1,-2,-1,-1,-1,-2,-2,-2,-2,-1,-1,-1,-2,-1,-2 };
-    return sex[number];
+    const array<int, 55> Sex{ -1,-2,-1,-1,-2,-2,-1,-2,-1,-1,-2,-1,-2,-2,-2,-1,-2,-1,-2,-1,-1,-1,-1,-2,-1,-2,-1,-1,-1,-2,-2,-1,-1,-2,-2,-2,-1,-2,-1,-1,-1,-2,-1,-1,-1,-2,-2,-2,-2,-1,-1,-1,-2,-1,-2 };
+    return Sex[Number];
+}
+
+void MemberOutput(int Number ,int Choose)
+{
+    Number = Number - 1;
+    const array<string, 55> Members{ "陈俊东","陈婉林","陈勇佳","丁晨洋","冯飞雯","冯泳钰","关楚睿","关淇允","何隽烨","洪勇坤","黄嘉慧","黄书伟","黄杏婷",
+        "黄咏诗","江晓君","劳伟臻","李佳霖","李若霖","李早","梁艺臻","梁宇恒","廖淞竣","林均泽","刘津蕊","刘炫辰","刘阳","陆才耀","陆嘉铭",
+        "伦宇杭","罗月霞","欧阳珏尧","潘亚颢","邱国勐","沈慧婕","苏树琪","汤蝶韵","唐鸿杰","汪思莉","韦绍煌","吴东燃","吴烨进","伍绮静",
+        "谢浩翔","徐家栋","徐一钦","姚蕾","叶心怡","易雯清","张睿钧","张伟坤","钟培燃","周政轩","朱洁兰","麦艺洋","吴心妍" };
+    if (Choose % 2 == 0)
+        cout << Members[Number] << " ";
+    else
+        cout << Members[Number] << endl;
 }
 
 void HiddenMode(void)
